@@ -225,13 +225,13 @@
     </footer>
 
     <script>
-        // --- 核心資料庫 (補充成分與用法) ---
+        // --- 核心資料庫 (已更新 100% 穩定版圖片連結) ---
         const products = [
-            { id: 'P01', name: '本系列機能飼料（1.5kg）', price: 899, category: '飼料', sales: 452, img: 'https://images.unsplash.com/photo-1589924691995-400dc9cec109?auto=format&fit=crop&w=500&q=80', usp: ['添加5%牛膝萃取物','增強免疫力、抗發炎','科學實證基礎'], ingredients: '新鮮雞肉、糙米、燕麥、5%特選牛膝萃取粉、深海魚油、益生菌群。', usage: '作為每日主食餵食，依據犬隻體重與活動量調整份量（包裝背面附有建議餵食表）。' },
-            { id: 'P02', name: '萃系列營養保健品（粉劑）', price: 749, category: '保健品', sales: 215, img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=500&q=80', usp: ['高濃度牛膝萃取','適合關節保健','易於拌入飼料'], ingredients: '高純度牛膝萃取物（含活性皂苷）、葡萄糖胺、軟骨素、專利腸道益生菌。', usage: '每日一次，10公斤以下1匙，10-20公斤2匙。可直接撒於乾糧或罐頭中混合餵食。' },
-            { id: 'P03', name: '萃系列營養保健品（膠囊）', price: 1099, category: '保健品', sales: 189, img: 'https://images.unsplash.com/photo-1615485290382-441e4d0c9cb5?auto=format&fit=crop&w=500&q=80', usp: ['精準餵食劑型','強效關節照護','無草本苦味'], ingredients: '極致純化牛膝精華、水解膠原蛋白、維生素D3、明膠膠囊。', usage: '每日一次，飯後餵食。可直接塞入寵物口中或混入肉泥中餵食。' },
-            { id: 'P04', name: '臻系列寵物藥品（錠劑）', price: 399, category: '藥品', sales: 120, img: 'https://images.unsplash.com/photo-1550572017-ed200f5e6a33?auto=format&fit=crop&w=500&q=80', usp: ['純化牛膝活性成分','非處方安全性高','針對關節發炎'], ingredients: '牛膝有效抗炎分子純化物、微結晶纖維素、天然肉味賦形劑。', usage: '針對急性關節不適或發炎反應，每日兩次，每次一錠。症狀緩解後可轉為保健品日常維護。' },
-            { id: 'P05', name: '臻系列寵物藥品（滴劑）', price: 699, category: '藥品', sales: 98, img: 'https://images.unsplash.com/photo-1585435557343-3b092031a831?auto=format&fit=crop&w=500&q=80', usp: ['液態好吸收','適合高齡犬','免疫調節基礎'], ingredients: '牛膝超微粒水相萃取液、純水、天然甘油。', usage: '每日早晚各一次，每公斤體重滴入 0.5ml 於口腔黏膜或飲用水中。' },
+            { id: 'P01', name: '本系列機能飼料（1.5kg）', price: 899, category: '飼料', sales: 452, img: 'https://images.unsplash.com/photo-1568644396922-5c3bfae12521?auto=format&fit=crop&w=500&q=80', usp: ['添加5%牛膝萃取物','增強免疫力、抗發炎','科學實證基礎'], ingredients: '新鮮雞肉、糙米、燕麥、5%特選牛膝萃取粉、深海魚油、益生菌群。', usage: '作為每日主食餵食，依據犬隻體重與活動量調整份量（包裝背面附有建議餵食表）。' },
+            { id: 'P02', name: '萃系列營養保健品（粉劑）', price: 749, category: '保健品', sales: 215, img: 'https://images.unsplash.com/photo-1622484211147-7561f2f87c95?auto=format&fit=crop&w=500&q=80', usp: ['高濃度牛膝萃取','適合關節保健','易於拌入飼料'], ingredients: '高純度牛膝萃取物（含活性皂苷）、葡萄糖胺、軟骨素、專利腸道益生菌。', usage: '每日一次，10公斤以下1匙，10-20公斤2匙。可直接撒於乾糧或罐頭中混合餵食。' },
+            { id: 'P03', name: '萃系列營養保健品（膠囊）', price: 1099, category: '保健品', sales: 189, img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=500&q=80', usp: ['精準餵食劑型','強效關節照護','無草本苦味'], ingredients: '極致純化牛膝精華、水解膠原蛋白、維生素D3、明膠膠囊。', usage: '每日一次，飯後餵食。可直接塞入寵物口中或混入肉泥中餵食。' },
+            { id: 'P04', name: '臻系列寵物藥品（錠劑）', price: 399, category: '藥品', sales: 120, img: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&w=500&q=80', usp: ['純化牛膝活性成分','非處方安全性高','針對關節發炎'], ingredients: '牛膝有效抗炎分子純化物、微結晶纖維素、天然肉味賦形劑。', usage: '針對急性關節不適或發炎反應，每日兩次，每次一錠。症狀緩解後可轉為保健品日常維護。' },
+            { id: 'P05', name: '臻系列寵物藥品（滴劑）', price: 699, category: '藥品', sales: 98, img: 'https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?auto=format&fit=crop&w=500&q=80', usp: ['液態好吸收','適合高齡犬','免疫調節基礎'], ingredients: '牛膝超微粒水相萃取液、純水、天然甘油。', usage: '每日早晚各一次，每公斤體重滴入 0.5ml 於口腔黏膜或飲用水中。' },
             { id: 'P06', name: '天然草本洗毛精（500ml）', price: 450, category: '清潔用品', sales: 320, img: 'https://images.unsplash.com/photo-1516733725897-1aa73b87c8e8?auto=format&fit=crop&w=500&q=80', usp: ['牛膝溫和舒緩配方','不刺激寵物肌膚','天然草本清香'], ingredients: '胺基酸起泡劑、牛膝草本萃取、燕麥精華、純淨水。', usage: '取適量搓揉起泡後，按摩寵物全身皮毛，再以溫水徹底沖淨。' },
             { id: 'P07', name: '牛膝潔牙骨（5入）', price: 199, category: '玩具零食', sales: 856, img: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=500&q=80', usp: ['磨牙同時補充營養','適口性極佳','提升口腔健康'], ingredients: '樹薯澱粉、牛膝細粉、天然蔬菜纖維、薄荷油。', usage: '每日給予一根作為獎勵與潔牙使用，請於飼主視線範圍內餵食。' }
         ];

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="本草寵集 - 本草機能，從飼料到藥品。以牛膝為核心的天然草本寵物品牌。">
+    <meta name="keywords" content="牛膝, 寵物機能, 草本飼料, 寵物保健, 本草寵集">
+    <title>本草寵集 | 本草機能，從飼料到藥品</title>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RN9B3NY11D');
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Noto+Sans+TC:wght@400;700&display=swap');
+
+        :root {
+            --primary: #4A7C59;    /* 大地綠 */
+            --bg-warm: #F5F0E6;   /* 暖米色 */
+            --dark-brown: #5D3A1A; /* 深褐色 */
+            --accent: #D7CCC8;
+            --white: #FFFFFF;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg-warm); color: var(--dark-brown); font-family: 'Noto Sans TC', 'Poppins', sans-serif; line-height: 1.6; }
+
+        /* 導覽列與搜尋 */
+        header { background: var(--white); border-bottom: 2px solid var(--primary); position: sticky; top: 0; z-index: 1000; padding: 10px 5%; }
+        .nav-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .logo { font-size: 1.8rem; font-weight: 700; color: var(--primary); cursor: pointer; text-decoration: none; }
+        .nav-actions { display: flex; align-items: center; gap: 15px; }
+        .search-bar { padding: 8px 15px; border: 1px solid var(--accent); border-radius: 20px; outline: none; width: 200px; }
+        
+        .nav-categories { display: flex; gap: 20px; font-weight: 600; list-style: none; overflow-x: auto; padding-bottom: 5px; }
+        .nav-categories li { cursor: pointer; white-space: nowrap; transition: color 0.3s; }
+        .nav-categories li:hover, .nav-categories li.active { color: var(--primary); }
+
+        /* Hero 與排行榜 */
+        .hero { background: linear-gradient(135deg, #4A7C59 0%, #2D4C36 100%); color: var(--white); padding: 60px 5%; text-align: center; position: relative; overflow: hidden; }
+        .hero::after { content: '🐾'; position: absolute; font-size: 10rem; opacity: 0.1; right: -20px; bottom: -20px; }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 15px; }
+        
+        .ranking-section { background: var(--white); padding: 30px 5%; margin: 20px 0; }
+        .ranking-title { text-align: center; margin-bottom: 20px; font-size: 1.5rem; color: var(--primary); }
+        .ranking-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .ranking-item { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid var(--accent); border-radius: 8px; }
+        .rank-num { font-weight: 700; color: var(--primary); font-size: 1.2rem; }
+
+        /* 商品展示 */
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        .product-card { background: var(--white); border-radius: 12px; overflow: hidden; transition: 0.3s; border: 1px solid var(--accent); position: relative; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .product-img { width: 100%; height: 220px; object-fit: cover; }
+        .product-info { padding: 15px; }
+        .sales-badge { background: #E8F5E9; color: var(--primary); font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; display: inline-block; margin-bottom: 5px; }
+        .product-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; min-height: 2.8em; }
+        .price-row { display: flex; justify-content: space-between; align-items: center; }
+        .price { color: var(--primary); font-weight: 700; font-size: 1.3rem; }
+        .buy-btn { background: var(--primary); color: var(--white); border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; }
+
+        /* 詳情與下單模態框 */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
+        .modal-content { background: var(--white); border-radius: 15px; width: 100%; max-width: 800px; max-height: 90vh; overflow-y: auto; position: relative; padding: 30px; }
+        .close-btn { position: absolute; right: 20px; top: 20px; font-size: 1.5rem; cursor: pointer; }
+        
+        .detail-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        @media (max-width: 600px) { .detail-layout { grid-template-columns: 1fr; } .ranking-grid { grid-template-columns: 1fr; } }
+        
+        .usp-list { margin: 20px 0; list-style: none; }
+        .usp-list li { margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .usp-list li::before { content: '✓'; color: var(--primary); font-weight: bold; }
+
+        /* 購物車與結帳 */
+        .cart-drawer { width: 100%; max-width: 450px; }
+        .step-indicator { display: flex; justify-content: space-between; margin-bottom: 30px; }
+        .step { font-size: 0.8rem; color: #999; }
+        .step.active { color: var(--primary); font-weight: 700; }
+        
+        /* 管理後台與表單樣式同前版但微調視覺 */
+        #admin-section { display: none; }
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+        .admin-table th, .admin-table td { border: 1px solid var(--accent); padding: 12px; font-size: 0.85rem; }
+        .action-bar { margin: 20px 0; display: flex; gap: 10px; }
+
+        footer { text-align: center; padding: 50px 5%; background: var(--white); border-top: 1px solid var(--accent); margin-top: 50px; }
+        .free-shipping-info { background: #FFF9C4; color: #5D3A1A; text-align: center; padding: 5px; font-size: 0.85rem; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <div class="free-shipping-info">✨ 限定驚喜：全站任選兩件商品即享免運 ✨</div>
+
+    <header>
+        <div class="nav-top">
+            <div class="logo" onclick="location.reload()">本草寵集</div>
+            <div class="nav-actions">
+                <input type="text" class="search-bar" id="search-input" placeholder="搜尋牛膝、飼料..." oninput="filterProducts()">
+                <button class="buy-btn" onclick="openCart()">購物車 (<span id="cart-count">0</span>)</button>
+            </div>
+        </div>
+        <ul class="nav-categories" id="category-nav">
+            <li class="active" onclick="setCategory('全部')">全部商品</li>
+            <li onclick="setCategory('飼料')">本系列(飼料)</li>
+            <li onclick="setCategory('保健品')">萃系列(保健)</li>
+            <li onclick="setCategory('藥品')">臻系列(藥品)</li>
+            <li onclick="setCategory('清潔用品')">清潔用品</li>
+            <li onclick="setCategory('玩具零食')">玩具零食</li>
+        </ul>
+    </header>
+
+    <div id="store-front">
+        <section class="hero">
+            <h1>本草機能，從飼料到藥品</h1>
+            <p>以核心成分「牛膝」打造科學實證的全方位照護方案</p>
+        </section>
+
+        <section class="ranking-section">
+            <div class="ranking-title">🏆 本日熱銷排行榜</div>
+            <div class="ranking-grid" id="ranking-list">
+                </div>
+        </section>
+
+        <div class="container">
+            <h2 style="margin-bottom:20px;">推薦商品</h2>
+            <div class="product-grid" id="product-display"></div>
+        </div>
+    </div>
+
+    <div id="admin-section" class="container">
+        <h2>系統後台數據中心</h2>
+        <div class="action-bar">
+            <button class="buy-btn" onclick="exportOrders()">匯出訂單 CSV</button>
+            <button class="buy-btn" style="background:#555" onclick="toggleAdmin()">返回商城</button>
+        </div>
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>編號</th>
+                    <th>來源地區</th>
+                    <th>總金額</th>
+                    <th>購買明細</th>
+                    <th>時間</th>
+                </tr>
+            </thead>
+            <tbody id="order-log"></tbody>
+        </table>
+    </div>
+
+    <div id="detail-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('detail-modal')">&times;</span>
+            <div id="detail-body"></div>
+        </div>
+    </div>
+
+    <div id="cart-modal" class="modal">
+        <div class="modal-content cart-drawer">
+            <span class="close-btn" onclick="closeModal('cart-modal')">&times;</span>
+            <div class="step-indicator">
+                <span class="step active" id="step1-label">1. 確認購物車</span>
+                <span class="step" id="step2-label">2. 填寫資訊</span>
+                <span class="step" id="step3-label">3. 完成下單</span>
+            </div>
+            <div id="cart-flow-content"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>本平台為 Asia University 課程模擬專案 | 100% 數位自動化下單模擬</p>
+        <p id="admin-trigger" style="margin-top:20px; color:#ccc; cursor:default;">© 2026 本草寵集</p>
+    </footer>
+
+    <script>
+        // --- 核心資料庫 (虛擬數量 9999) ---
+        const products = [
+            { id: 'P01', name: '本系列機能飼料（1.5kg）', price: 899, category: '飼料', sales: 452, img: 'https://images.unsplash.com/photo-1589924691995-400dc9cec109?auto=format&fit=crop&w=500&q=80', usp: ['添加5%牛膝萃取物','增強免疫力、抗發炎','科學實證基礎'] },
+            { id: 'P02', name: '萃系列營養保健品（粉劑）', price: 749, category: '保健品', sales: 215, img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=500&q=80', usp: ['高濃度牛膝萃取','適合關節保健','易於拌入飼料'] },
+            { id: 'P03', name: '萃系列營養保健品（膠囊）', price: 1099, category: '保健品', sales: 189, img: 'https://images.unsplash.com/photo-1615485290382-441e4d0c9cb5?auto=format&fit=crop&w=500&q=80', usp: ['精準餵食劑型','強效關節照護','無草本苦味'] },
+            { id: 'P04', name: '臻系列寵物藥品（錠劑）', price: 399, category: '藥品', sales: 120, img: 'https://images.unsplash.com/photo-1550572017-ed200f5e6a33?auto=format&fit=crop&w=500&q=80', usp: ['純化牛膝活性成分','非處方安全性高','針對關節發炎'] },
+            { id: 'P05', name: '臻系列寵物藥品（滴劑）', price: 699, category: '藥品', sales: 98, img: 'https://images.unsplash.com/photo-1585435557343-3b092031a831?auto=format&fit=crop&w=500&q=80', usp: ['液態好吸收','適合高齡犬','免疫調節基礎'] },
+            { id: 'P06', name: '天然草本洗毛精（500ml）', price: 450, category: '清潔用品', sales: 320, img: 'https://images.unsplash.com/photo-1516733725897-1aa73b87c8e8?auto=format&fit=crop&w=500&q=80', usp: ['牛膝溫和舒緩配方','不刺激寵物肌膚','天然草本清香'] },
+            { id: 'P07', name: '牛膝潔牙骨（5入）', price: 199, category: '玩具零食', sales: 856, img: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=500&q=80', usp: ['磨牙同時補充營養','適口性極佳','提升口腔健康'] }
+        ];
+
+        let cart = JSON.parse(localStorage.getItem('herb_cart')) || [];
+        let orders = JSON.parse(localStorage.getItem('herb_orders')) || [];
+        let currentCategory = '全部';
+
+        // --- 渲染功能 ---
+        function renderRanking() {
+            const top3 = [...products].sort((a, b) => b.sales - a.sales).slice(0, 3);
+            document.getElementById('ranking-list').innerHTML = top3.map((p, idx) => `
+                <div class="ranking-item" onclick="showDetail('${p.id}')" style="cursor:pointer">
+                    <span class="rank-num">0${idx+1}</span>
+                    <div style="font-size:0.85rem">
+                        <strong>${p.name}</strong><br>
+                        <span style="color:#999">已銷量 ${p.sales} 件</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterProducts() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const filtered = products.filter(p => {
+                const matchCategory = currentCategory === '全部' || p.category === currentCategory;
+                const matchSearch = p.name.toLowerCase().includes(searchTerm);
+                return matchCategory && matchSearch;
+            });
+
+            document.getElementById('product-display').innerHTML = filtered.map(p => `
+                <div class="product-card">
+                    <img src="${p.img}" class="product-img" onclick="showDetail('${p.id}')" style="cursor:pointer">
+                    <div class="product-info">
+                        <span class="sales-badge">本月銷量 ${p.sales}</span>
+                        <div class="product-name">${p.name}</div>
+                        <div class="price-row">
+                            <span class="price">$${p.price}</span>
+                            <button class="buy-btn" onclick="addToCart('${p.id}')">加入</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function setCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('#category-nav li').forEach(li => {
+                li.classList.toggle('active', li.innerText.includes(cat));
+            });
+            filterProducts();
+        }
+
+        function showDetail(id) {
+            const p = products.find(x => x.id === id);
+            document.getElementById('detail-body').innerHTML = `
+                <div class="detail-layout">
+                    <img src="${p.img}" style="width:100%; border-radius:10px;">
+                    <div>
+                        <span class="sales-badge">${p.category}</span>
+                        <h2>${p.name}</h2>
+                        <h3 style="color:var(--primary); margin:10px 0">$${p.price}</h3>
+                        <ul class="usp-list">
+                            ${p.usp.map(u => `<li>${u}</li>`).join('')}
+                        </ul>
+                        <p style="font-size:0.8rem; color:#666; margin-bottom:20px;">
+                            科學背景：研究指出牛膝萃取物富含皂苷與多醣體...<br>
+                            <a href="#" style="color:var(--primary)">查看相關科學獻</a>
+                        </p>
+                        <button class="buy-btn" style="width:100%; padding:12px" onclick="addToCart('${p.id}')">加入購物車</button>
+                    </div>
+                </div>
+                <div style="margin-top:30px; border-top:1px solid #eee; padding-top:20px;">
+                    <h4>顧客評價 (強制文字描述)</h4>
+                    <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-top:10px;">
+                        <strong>⭐⭐⭐⭐⭐ 王小明</strong>
+                        <p>狗狗關節炎狀況明顯改善，草本味道不刺激，會再回購！</p>
+                    </div>
+                </div>
+            `;
+            openModal('detail-modal');
+        }
+
+        // --- 購物車與下單流程邏輯 ---
+        function addToCart(id) {
+            const p = products.find(x => x.id === id);
+            const exist = cart.find(i => i.id === id);
+            if (exist) exist.qty++; else cart.push({...p, qty: 1});
+            updateCartCount();
+            localStorage.setItem('herb_cart', JSON.stringify(cart));
+            alert("已加入購物車！");
+        }
+
+        function updateCartCount() {
+            document.getElementById('cart-count').innerText = cart.reduce((s, i) => s + i.qty, 0);
+        }
+
+        function openCart() {
+            renderCartStep1();
+            openModal('cart-modal');
+        }
+
+        function renderCartStep1() {
+            document.getElementById('step1-label').className = 'step active';
+            document.getElementById('step2-label').className = 'step';
+            
+            if (cart.length === 0) {
+                document.getElementById('cart-flow-content').innerHTML = '<p style="text-align:center; padding:40px;">購物車是空的</p>';
+                return;
+            }
+
+            let subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+            let shipping = cart.length >= 2 ? 0 : 80;
+            
+            let html = cart.map((i, idx) => `
+                <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:10px;">
+                    <div>${i.name}<br><small>$${i.price} x ${i.qty}</small></div>
+                    <button onclick="removeItem(${idx})" style="border:none; background:none; color:red; cursor:pointer;">刪除</button>
+                </div>
+            `).join('');
+
+            html += `
+                <div style="margin-top:20px; border-top:2px solid var(--primary); padding-top:10px;">
+                    <div style="display:flex; justify-content:space-between;"><span>小計</span><span>$${subtotal}</span></div>
+                    <div style="display:flex; justify-content:space-between; color:var(--primary);"><span>運費 (任兩件免運)</span><span>${shipping === 0 ? '免運' : '$80'}</span></div>
+                    <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:1.2rem;"><span>總計</span><span>$${subtotal + shipping}</span></div>
+                </div>
+                <button class="buy-btn" style="width:100%; margin-top:20px; padding:12px" onclick="renderCartStep2()">填寫收貨資訊</button>
+            `;
+            document.getElementById('cart-flow-content').innerHTML = html;
+        }
+
+        function renderCartStep2() {
+            document.getElementById('step2-label').className = 'step active';
+            document.getElementById('cart-flow-content').innerHTML = `
+                <div style="display:flex; flex-direction:column; gap:15px;">
+                    <label>收件人暱稱 *<input type="text" id="order-name" style="width:100%; padding:8px;" required></label>
+                    <label>配送地區 *
+                        <select id="order-region" style="width:100%; padding:8px;">
+                            <option>北部</option><option>中部</option><option>南部</option><option>東部</option>
+                        </select>
+                    </label>
+                    <label>聯絡信箱 (用於補貨通知模擬)<input type="email" style="width:100%; padding:8px;"></label>
+                    <button class="buy-btn" style="padding:12px" onclick="finishOrder()">確認提交模擬訂單</button>
+                </div>
+            `;
+        }
+
+        function finishOrder() {
+            const name = document.getElementById('order-name').value;
+            if (!name) return alert("請填寫暱稱");
+            
+            const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+            const shipping = cart.length >= 2 ? 0 : 80;
+            const newOrder = {
+                id: 'ORD' + Date.now().toString().slice(-6),
+                name: name,
+                region: document.getElementById('order-region').value,
+                total: subtotal + shipping,
+                items: cart.map(i => `${i.name}x${i.qty}`).join(', '),
+                time: new Date().toLocaleString()
+            };
+            
+            orders.push(newOrder);
+            localStorage.setItem('herb_orders', JSON.stringify(orders));
+            
+            // GA4 模擬
+            gtag('event', 'purchase', { transaction_id: newOrder.id, value: newOrder.total, currency: 'TWD' });
+
+            cart = [];
+            localStorage.removeItem('herb_cart');
+            updateCartCount();
+            
+            document.getElementById('step3-label').className = 'step active';
+            document.getElementById('cart-flow-content').innerHTML = `
+                <div style="text-align:center; padding:30px;">
+                    <h2 style="color:var(--primary)">🎉 模擬訂單已成立！</h2>
+                    <p style="margin:15px 0">訂單編號：${newOrder.id}</p>
+                    <p style="font-size:0.85rem; color:#666">這是一個課程模擬專案，系統不會真實出貨。</p>
+                    <button class="buy-btn" style="margin-top:20px" onclick="closeModal('cart-modal')">返回首頁</button>
+                </div>
+            `;
+        }
+
+        // --- 管理後台機制 ---
+        let adminClicks = 0;
+        document.getElementById('admin-trigger').onclick = () => {
+            adminClicks++;
+            if (adminClicks >= 5) {
+                toggleAdmin();
+                adminClicks = 0;
+            }
+        };
+
+        function toggleAdmin() {
+            const isStore = document.getElementById('store-front').style.display !== 'none';
+            document.getElementById('store-front').style.display = isStore ? 'none' : 'block';
+            document.getElementById('admin-section').style.display = isStore ? 'block' : 'none';
+            if (isStore) renderAdminOrders();
+        }
+
+        function renderAdminOrders() {
+            document.getElementById('order-log').innerHTML = orders.map(o => `
+                <tr>
+                    <td>${o.id}</td>
+                    <td>${o.region}</td>
+                    <td>$${o.total}</td>
+                    <td>${o.items}</td>
+                    <td>${o.time}</td>
+                </tr>
+            `).join('');
+        }
+
+        function exportOrders() {
+            let csv = "\uFEFF編號,暱稱,地區,總金額,項目,時間\n";
+            orders.forEach(o => csv += `${o.id},${o.name},${o.region},${o.total},"${o.items}",${o.time}\n`);
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "本草寵集_模擬交易數據.csv";
+            link.click();
+        }
+
+        function removeItem(idx) { cart.splice(idx, 1); localStorage.setItem('herb_cart', JSON.stringify(cart)); updateCartCount(); renderCartStep1(); }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        // --- 初始化 ---
+        renderRanking();
+        filterProducts();
+        updateCartCount();
+    </script>
+</body>
+</html>

@@ -32,7 +32,6 @@
         .logo { font-size: 1.8rem; font-weight: 700; color: var(--primary); cursor: pointer; text-decoration: none; }
         .nav-actions { display: flex; align-items: center; gap: 10px; }
         
-        /* 修正：搜尋列與按鈕組合 */
         .search-container { display: flex; align-items: center; background: var(--white); border: 1px solid var(--accent); border-radius: 20px; overflow: hidden; }
         .search-bar { padding: 8px 15px; border: none; outline: none; width: 160px; }
         .search-btn { background: none; border: none; padding: 8px 12px; cursor: pointer; font-size: 1rem; }
@@ -54,7 +53,6 @@
 
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         
-        /* 獨立頁面區塊 */
         .page-section { display: none; background: var(--white); padding: 40px; border-radius: 12px; margin-top: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; }
@@ -86,11 +84,15 @@
         .form-group select, .form-group input { width: 100%; padding: 10px; border: 1px solid var(--accent); border-radius: 6px; font-family: inherit; }
 
         #admin-section { display: none; }
-        .admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
-        .admin-table th, .admin-table td { border: 1px solid var(--accent); padding: 12px; font-size: 0.85rem; }
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; font-size: 0.8rem; }
+        .admin-table th, .admin-table td { border: 1px solid var(--accent); padding: 8px; }
         
         footer { text-align: center; padding: 50px 5%; background: var(--white); border-top: 1px solid var(--accent); margin-top: 50px; }
         .free-shipping-info { background: #FFF9C4; color: #5D3A1A; text-align: center; padding: 5px; font-size: 0.85rem; font-weight: 600; }
+        
+        /* 問卷專區樣式 */
+        .survey-box { background: #f0f7f4; padding: 15px; border-radius: 8px; border: 1px dashed var(--primary); margin-bottom: 20px; }
+        .survey-box h4 { color: var(--primary); margin-bottom: 15px; font-size: 1rem; border-bottom: 1px solid #c8e6c9; padding-bottom: 5px; }
     </style>
 </head>
 <body>
@@ -155,7 +157,7 @@
         </div>
     </div>
 
-    <div id="admin-section" class="container page-section">
+    <div id="admin-section" class="container page-section" style="max-width:100%; overflow-x:auto;">
         <h2>系統後台數據中心</h2>
         <div style="margin: 20px 0; display: flex; gap: 10px;">
             <button class="buy-btn" onclick="exportOrders()">匯出訂單 CSV</button>
@@ -165,11 +167,14 @@
             <thead>
                 <tr>
                     <th>編號</th>
-                    <th>來源地區</th>
+                    <th>暱稱</th>
+                    <th>地區</th>
                     <th>總金額</th>
-                    <th>付款方式</th>
+                    <th>購買動機</th>
+                    <th>未買商品(隨機)</th>
+                    <th>未買原因</th>
+                    <th>放棄購物車主因</th>
                     <th>購買明細</th>
-                    <th>時間</th>
                 </tr>
             </thead>
             <tbody id="order-log"></tbody>
@@ -181,7 +186,6 @@
             <span class="close-btn" onclick="closeModal('combo-modal')">&times;</span>
             <h2 style="color:var(--primary); margin-bottom: 10px;">客製化本草完整組</h2>
             <p style="font-size:0.9rem; color:#666; margin-bottom: 20px;">自由搭配您的機能方案，專案優惠組合價 <strong>$3,880</strong> (原價最高可達 $4,596)</p>
-            
             <div class="form-group">
                 <label>1. 基礎防護 (固定內容)</label>
                 <input type="text" value="本系列機能飼料（1.5kg） x 3包" disabled style="background:#eee; color:#666;">
@@ -195,7 +199,6 @@
                 <label>3. 選擇藥品 (任選 1 盒)</label>
                 <select id="combo-med"><option value="臻系列寵物藥品（錠劑）">臻系列寵物藥品（錠劑）</option><option value="臻系列寵物藥品（滴劑）">臻系列寵物藥品（滴劑）</option></select>
             </div>
-            
             <button class="buy-btn" style="width:100%; padding:12px; font-size:1.1rem; margin-top:10px;" onclick="addComboToCart()">將專屬組合加入購物車</button>
         </div>
     </div>
@@ -208,9 +211,9 @@
     </div>
 
     <div id="cart-modal" class="modal">
-        <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-content" style="max-width: 550px;">
             <span class="close-btn" onclick="closeModal('cart-modal')">&times;</span>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 30px; font-size:0.85rem; color:#999;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-size:0.85rem; color:#999;">
                 <span id="step1-label" style="color:var(--primary); font-weight:bold;">1. 確認購物車</span>
                 <span id="step2-label">2. 填寫資訊</span>
                 <span id="step3-label">3. 完成下單</span>
@@ -225,15 +228,14 @@
     </footer>
 
     <script>
-        // --- 核心資料庫 (已更新 100% 穩定版圖片連結) ---
         const products = [
-            { id: 'P01', name: '本系列機能飼料（1.5kg）', price: 899, category: '飼料', sales: 452, img: 'https://images.unsplash.com/photo-1568644396922-5c3bfae12521?auto=format&fit=crop&w=500&q=80', usp: ['添加5%牛膝萃取物','增強免疫力、抗發炎','科學實證基礎'], ingredients: '新鮮雞肉、糙米、燕麥、5%特選牛膝萃取粉、深海魚油、益生菌群。', usage: '作為每日主食餵食，依據犬隻體重與活動量調整份量（包裝背面附有建議餵食表）。' },
-            { id: 'P02', name: '萃系列營養保健品（粉劑）', price: 749, category: '保健品', sales: 215, img: 'https://images.unsplash.com/photo-1622484211147-7561f2f87c95?auto=format&fit=crop&w=500&q=80', usp: ['高濃度牛膝萃取','適合關節保健','易於拌入飼料'], ingredients: '高純度牛膝萃取物（含活性皂苷）、葡萄糖胺、軟骨素、專利腸道益生菌。', usage: '每日一次，10公斤以下1匙，10-20公斤2匙。可直接撒於乾糧或罐頭中混合餵食。' },
-            { id: 'P03', name: '萃系列營養保健品（膠囊）', price: 1099, category: '保健品', sales: 189, img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=500&q=80', usp: ['精準餵食劑型','強效關節照護','無草本苦味'], ingredients: '極致純化牛膝精華、水解膠原蛋白、維生素D3、明膠膠囊。', usage: '每日一次，飯後餵食。可直接塞入寵物口中或混入肉泥中餵食。' },
-            { id: 'P04', name: '臻系列寵物藥品（錠劑）', price: 399, category: '藥品', sales: 120, img: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&w=500&q=80', usp: ['純化牛膝活性成分','非處方安全性高','針對關節發炎'], ingredients: '牛膝有效抗炎分子純化物、微結晶纖維素、天然肉味賦形劑。', usage: '針對急性關節不適或發炎反應，每日兩次，每次一錠。症狀緩解後可轉為保健品日常維護。' },
-            { id: 'P05', name: '臻系列寵物藥品（滴劑）', price: 699, category: '藥品', sales: 98, img: 'https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?auto=format&fit=crop&w=500&q=80', usp: ['液態好吸收','適合高齡犬','免疫調節基礎'], ingredients: '牛膝超微粒水相萃取液、純水、天然甘油。', usage: '每日早晚各一次，每公斤體重滴入 0.5ml 於口腔黏膜或飲用水中。' },
-            { id: 'P06', name: '天然草本洗毛精（500ml）', price: 450, category: '清潔用品', sales: 320, img: 'https://images.unsplash.com/photo-1516733725897-1aa73b87c8e8?auto=format&fit=crop&w=500&q=80', usp: ['牛膝溫和舒緩配方','不刺激寵物肌膚','天然草本清香'], ingredients: '胺基酸起泡劑、牛膝草本萃取、燕麥精華、純淨水。', usage: '取適量搓揉起泡後，按摩寵物全身皮毛，再以溫水徹底沖淨。' },
-            { id: 'P07', name: '牛膝潔牙骨（5入）', price: 199, category: '玩具零食', sales: 856, img: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=500&q=80', usp: ['磨牙同時補充營養','適口性極佳','提升口腔健康'], ingredients: '樹薯澱粉、牛膝細粉、天然蔬菜纖維、薄荷油。', usage: '每日給予一根作為獎勵與潔牙使用，請於飼主視線範圍內餵食。' }
+            { id: 'P01', name: '本系列機能飼料（1.5kg）', price: 899, category: '飼料', sales: 452, img: 'https://images.unsplash.com/photo-1568644396922-5c3bfae12521?auto=format&fit=crop&w=500&q=80', usp: ['添加5%牛膝萃取物','增強免疫力、抗發炎','科學實證基礎'], ingredients: '新鮮雞肉、糙米、燕麥、5%特選牛膝萃取粉、深海魚油、益生菌群。', usage: '作為每日主食餵食，依據犬隻體重與活動量調整份量。' },
+            { id: 'P02', name: '萃系列營養保健品（粉劑）', price: 749, category: '保健品', sales: 215, img: 'https://images.unsplash.com/photo-1622484211147-7561f2f87c95?auto=format&fit=crop&w=500&q=80', usp: ['高濃度牛膝萃取','適合關節保健','易於拌入飼料'], ingredients: '高純度牛膝萃取物、葡萄糖胺、軟骨素、益生菌。', usage: '每日一次，10公斤以下1匙，10-20公斤2匙。' },
+            { id: 'P03', name: '萃系列營養保健品（膠囊）', price: 1099, category: '保健品', sales: 189, img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=500&q=80', usp: ['精準餵食劑型','強效關節照護','無草本苦味'], ingredients: '純化牛膝精華、水解膠原蛋白、維生素D3。', usage: '每日一次，飯後餵食。' },
+            { id: 'P04', name: '臻系列寵物藥品（錠劑）', price: 399, category: '藥品', sales: 120, img: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&w=500&q=80', usp: ['純化牛膝活性成分','非處方安全性高','針對關節發炎'], ingredients: '牛膝抗炎分子純化物、微結晶纖維素。', usage: '急性關節不適每日兩次，每次一錠。' },
+            { id: 'P05', name: '臻系列寵物藥品（滴劑）', price: 699, category: '藥品', sales: 98, img: 'https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?auto=format&fit=crop&w=500&q=80', usp: ['液態好吸收','適合高齡犬','免疫調節基礎'], ingredients: '牛膝水相萃取液、純水、天然甘油。', usage: '每日早晚各一次，每公斤體重滴入 0.5ml。' },
+            { id: 'P06', name: '天然草本洗毛精（500ml）', price: 450, category: '清潔用品', sales: 320, img: 'https://images.unsplash.com/photo-1516733725897-1aa73b87c8e8?auto=format&fit=crop&w=500&q=80', usp: ['牛膝溫和舒緩配方','不刺激寵物肌膚','天然草本清香'], ingredients: '胺基酸起泡劑、牛膝草本萃取、燕麥精華。', usage: '搓揉起泡後按摩皮毛，再以溫水沖淨。' },
+            { id: 'P07', name: '牛膝潔牙骨（5入）', price: 199, category: '玩具零食', sales: 856, img: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=500&q=80', usp: ['磨牙同時補充營養','適口性極佳','提升口腔健康'], ingredients: '樹薯澱粉、牛膝細粉、薄荷油。', usage: '每日給予一根作為獎勵與潔牙使用。' }
         ];
 
         let cart = JSON.parse(localStorage.getItem('herb_cart')) || [];
@@ -242,18 +244,13 @@
         let currentCategory = '全部';
         let currentPage = 'store';
 
-        // --- 視圖導航邏輯 ---
         function navigate(page, category = '全部') {
             currentPage = page;
             currentCategory = category;
-
-            // 隱藏所有區塊
             document.getElementById('store-section').style.display = 'none';
             document.getElementById('brand-section').style.display = 'none';
             document.getElementById('contact-section').style.display = 'none';
             document.getElementById('admin-section').style.display = 'none';
-
-            // 更新標籤樣式
             document.querySelectorAll('#category-nav li').forEach(li => li.classList.remove('active'));
 
             if (page === 'store' || page === 'favorites') {
@@ -278,14 +275,9 @@
             }
         }
 
-        // --- 渲染功能 ---
         function toggleFav(e, id) {
-            e.stopPropagation(); // 阻止觸發 showDetail
-            if (favs.includes(id)) {
-                favs = favs.filter(x => x !== id);
-            } else {
-                favs.push(id);
-            }
+            e.stopPropagation();
+            if (favs.includes(id)) { favs = favs.filter(x => x !== id); } else { favs.push(id); }
             localStorage.setItem('herb_favs', JSON.stringify(favs));
             filterProducts();
         }
@@ -319,17 +311,12 @@
 
             document.getElementById('product-display').innerHTML = filtered.map(p => `
                 <div class="product-card">
-                    <button class="fav-btn" onclick="toggleFav(event, '${p.id}')">
-                        ${favs.includes(p.id) ? '❤️' : '🤍'}
-                    </button>
+                    <button class="fav-btn" onclick="toggleFav(event, '${p.id}')">${favs.includes(p.id) ? '❤️' : '🤍'}</button>
                     <img src="${p.img}" class="product-img" onclick="showDetail('${p.id}')">
                     <div class="product-info">
                         <span class="sales-badge">本月銷量 ${p.sales}</span>
                         <div class="product-name">${p.name}</div>
-                        <div class="price-row">
-                            <span class="price">$${p.price}</span>
-                            <button class="buy-btn" onclick="addToCart('${p.id}')">加入</button>
-                        </div>
+                        <div class="price-row"><span class="price">$${p.price}</span><button class="buy-btn" onclick="addToCart('${p.id}')">加入</button></div>
                     </div>
                 </div>
             `).join('');
@@ -341,46 +328,22 @@
                 <div class="detail-layout">
                     <img src="${p.img}" style="width:100%; border-radius:10px;">
                     <div>
-                        <span class="sales-badge">${p.category}</span>
-                        <h2>${p.name}</h2>
+                        <span class="sales-badge">${p.category}</span><h2>${p.name}</h2>
                         <h3 style="color:var(--primary); margin:10px 0">$${p.price}</h3>
-                        <ul class="usp-list">
-                            ${p.usp.map(u => `<li>${u}</li>`).join('')}
-                        </ul>
-                        
-                        <div class="info-box">
-                            <strong>🌿 詳細成分：</strong><br>${p.ingredients}<br><br>
-                            <strong>💡 使用方法：</strong><br>${p.usage}
-                        </div>
-
+                        <ul class="usp-list">${p.usp.map(u => `<li>${u}</li>`).join('')}</ul>
+                        <div class="info-box"><strong>🌿 詳細成分：</strong><br>${p.ingredients}<br><br><strong>💡 使用方法：</strong><br>${p.usage}</div>
                         <button class="buy-btn" style="width:100%; padding:12px" onclick="addToCart('${p.id}')">加入購物車</button>
-                    </div>
-                </div>
-                <div style="margin-top:30px; border-top:1px solid #eee; padding-top:20px;">
-                    <h4>顧客評價</h4>
-                    <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-top:10px;">
-                        <strong>⭐⭐⭐⭐⭐ 王小明</strong>
-                        <p>狗狗關節炎狀況明顯改善，草本味道不刺激，會再回購！成分標示得很清楚，讓人很安心。</p>
                     </div>
                 </div>
             `;
             openModal('detail-modal');
         }
 
-        // --- 組合包專用邏輯 ---
         function addComboToCart() {
             const s1 = document.getElementById('combo-sup1').value;
             const s2 = document.getElementById('combo-sup2').value;
             const m = document.getElementById('combo-med').value;
-            
-            const comboProduct = {
-                id: 'COMB' + Date.now().toString().slice(-4),
-                name: '👑 客製本草完整組',
-                price: 3880,
-                qty: 1,
-                detail: `(飼料x3, ${s1}, ${s2}, ${m})`
-            };
-            
+            const comboProduct = { id: 'COMB' + Date.now().toString().slice(-4), name: '👑 客製本草完整組', price: 3880, qty: 1, detail: `(飼料x3, ${s1}, ${s2}, ${m})` };
             cart.push(comboProduct);
             updateCartCount();
             localStorage.setItem('herb_cart', JSON.stringify(cart));
@@ -388,7 +351,6 @@
             alert("已將專屬組合加入購物車！");
         }
 
-        // --- 購物車與下單流程邏輯 ---
         function addToCart(id) {
             const p = products.find(x => x.id === id);
             const exist = cart.find(i => i.id === id);
@@ -398,28 +360,19 @@
             alert("已加入購物車！");
         }
 
-        function updateCartCount() {
-            document.getElementById('cart-count').innerText = cart.reduce((s, i) => s + i.qty, 0);
-        }
+        function updateCartCount() { document.getElementById('cart-count').innerText = cart.reduce((s, i) => s + i.qty, 0); }
 
-        function openCart() {
-            renderCartStep1();
-            openModal('cart-modal');
-        }
+        function openCart() { renderCartStep1(); openModal('cart-modal'); }
 
         function renderCartStep1() {
             document.getElementById('step1-label').style.color = 'var(--primary)'; document.getElementById('step1-label').style.fontWeight = 'bold';
             document.getElementById('step2-label').style.color = '#999'; document.getElementById('step2-label').style.fontWeight = 'normal';
-            
             if (cart.length === 0) {
                 document.getElementById('cart-flow-content').innerHTML = '<p style="text-align:center; padding:40px;">購物車是空的</p>';
                 return;
             }
-
             const totalQty = cart.reduce((s, i) => s + i.qty, 0);
             let subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-            
-            // 修正：總件數大於等於2件即免運
             let shipping = totalQty >= 2 ? 0 : 80; 
             
             let html = cart.map((i, idx) => `
@@ -435,41 +388,77 @@
                     <div style="display:flex; justify-content:space-between; color:var(--primary);"><span>運費 (任兩件免運)</span><span>${shipping === 0 ? '免運' : '$80'}</span></div>
                     <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:1.2rem; margin-top:10px;"><span>總計</span><span>$${subtotal + shipping}</span></div>
                 </div>
-                <button class="buy-btn" style="width:100%; margin-top:20px; padding:12px; font-size:1rem;" onclick="renderCartStep2()">下一步：填寫收貨與付款資訊</button>
+                <button class="buy-btn" style="width:100%; margin-top:20px; padding:12px; font-size:1rem;" onclick="renderCartStep2()">下一步：填寫收貨與問卷</button>
             `;
             document.getElementById('cart-flow-content').innerHTML = html;
         }
 
+        // --- 核心更新：加入隨機未購商品與流失問卷 ---
         function renderCartStep2() {
             document.getElementById('step1-label').style.color = '#999'; document.getElementById('step1-label').style.fontWeight = 'normal';
             document.getElementById('step2-label').style.color = 'var(--primary)'; document.getElementById('step2-label').style.fontWeight = 'bold';
             
+            // 找出不在購物車內的商品進行隨機抽選
+            const unbought = products.filter(p => !cart.find(c => c.id === p.id));
+            const randomProd = unbought.length > 0 ? unbought[Math.floor(Math.random() * unbought.length)] : products[0];
+
             document.getElementById('cart-flow-content').innerHTML = `
-                <div class="form-group">
-                    <label>收件人暱稱 *</label>
-                    <input type="text" id="order-name" required placeholder="請輸入姓名或暱稱">
+                <div style="display:flex; gap:15px; flex-wrap:wrap;">
+                    <div style="flex:1; min-width:200px;">
+                        <div class="form-group"><label>收件人暱稱 *</label><input type="text" id="order-name" required placeholder="請輸入姓名或暱稱"></div>
+                        <div class="form-group"><label>配送地區 *</label>
+                            <select id="order-region"><option>北部</option><option>中部</option><option>南部</option><option>東部/離島</option></select>
+                        </div>
+                        <div class="form-group"><label>付款方式 * (測試用)</label>
+                            <select id="order-payment"><option value="信用卡付款">信用卡付款</option><option value="LINE Pay">LINE Pay</option><option value="貨到付款">貨到付款</option></select>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>配送地區 *</label>
-                    <select id="order-region">
-                        <option>北部</option><option>中部</option><option>南部</option><option>東部/離島</option>
-                    </select>
+                
+                <div class="survey-box">
+                    <h4>📝 本次模擬測試專用問卷</h4>
+                    
+                    <div class="form-group">
+                        <label>1. 請問您這次決定參與模擬購買的主要原因？</label>
+                        <select id="q-reason-buy">
+                            <option value="支持天然草本與牛膝理念">支持天然草本與牛膝理念</option>
+                            <option value="被社群貼文或廣告吸引">被社群貼文或廣告吸引</option>
+                            <option value="親友推薦介紹">親友推薦介紹</option>
+                            <option value="價格與免運優惠吸引">價格與免運優惠吸引</option>
+                            <option value="單純幫忙測試系統">單純幫忙測試系統</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>2. 在真實網購環境下，若您將商品放入購物車卻遲遲未結帳（放棄購物車），最主要的原因通常是？</label>
+                        <select id="q-reason-abandon">
+                            <option value="結帳要填的資料太多太繁瑣">結帳要填的資料太多太繁瑣</option>
+                            <option value="結帳時才發現運費太高">結帳時才發現運費太高</option>
+                            <option value="還想去別的平台比價">還想去別的平台比價</option>
+                            <option value="找不到信任的付款方式">找不到信任的付款方式</option>
+                            <option value="只是先放著當作購物清單，還沒決定買">只是先放著當作購物清單，還沒決定買</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="background:#fff; padding:10px; border-radius:6px; border:1px solid #ddd;">
+                        <label>3. 經系統偵測，您本次並未選購以下商品，能告訴我們原因嗎？</label>
+                        <div style="display:flex; align-items:center; gap:10px; margin:10px 0;">
+                            <img src="${randomProd.img}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">
+                            <span style="font-size:0.85rem; font-weight:bold; color:var(--dark-brown);" id="q-random-prod-name" data-id="${randomProd.name}">${randomProd.name}</span>
+                        </div>
+                        <select id="q-reason-not-buy">
+                            <option value="價格超出預期">價格超出預期</option>
+                            <option value="寵物目前不需要此功效">寵物目前不需要此功效</option>
+                            <option value="不了解該商品的特色">不了解該商品的特色</option>
+                            <option value="家裡已經有類似的庫存">家裡已經有類似的庫存</option>
+                            <option value="單純沒注意到這個商品">單純沒注意到這個商品</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>付款方式 * (暫供測試用)</label>
-                    <select id="order-payment">
-                        <option value="信用卡付款">信用卡付款</option>
-                        <option value="LINE Pay">LINE Pay</option>
-                        <option value="貨到付款">貨到付款</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>聯絡信箱 (選填)</label>
-                    <input type="email" placeholder="example@mail.com">
-                </div>
-                <div style="display:flex; gap:10px; margin-top:20px;">
+
+                <div style="display:flex; gap:10px;">
                     <button class="buy-btn" style="background:#ccc; width:30%; padding:12px;" onclick="renderCartStep1()">上一步</button>
-                    <button class="buy-btn" style="width:70%; padding:12px; font-size:1rem;" onclick="finishOrder()">確認提交模擬訂單</button>
+                    <button class="buy-btn" style="width:70%; padding:12px; font-size:1rem;" onclick="finishOrder()">確認送出訂單與問卷</button>
                 </div>
             `;
         }
@@ -482,12 +471,22 @@
             const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
             const shipping = totalQty >= 2 ? 0 : 80;
             const paymentMethod = document.getElementById('order-payment').value;
+            
+            // 抓取問卷資料
+            const qBuy = document.getElementById('q-reason-buy').value;
+            const qAbandon = document.getElementById('q-reason-abandon').value;
+            const qRandomProd = document.getElementById('q-random-prod-name').getAttribute('data-id');
+            const qNotBuy = document.getElementById('q-reason-not-buy').value;
 
             const newOrder = {
                 id: 'ORD' + Date.now().toString().slice(-6),
                 name: name,
                 region: document.getElementById('order-region').value,
                 payment: paymentMethod,
+                qBuy: qBuy,
+                qAbandon: qAbandon,
+                qRandomProd: qRandomProd,
+                qNotBuy: qNotBuy,
                 total: subtotal + shipping,
                 items: cart.map(i => `${i.name}${i.detail||''} x${i.qty}`).join(' | '),
                 time: new Date().toLocaleString()
@@ -495,8 +494,6 @@
             
             orders.push(newOrder);
             localStorage.setItem('herb_orders', JSON.stringify(orders));
-            
-            // GA4 模擬
             gtag('event', 'purchase', { transaction_id: newOrder.id, value: newOrder.total, currency: 'TWD' });
 
             cart = [];
@@ -511,45 +508,43 @@
                     <div style="font-size:3rem; margin-bottom:10px;">🎉</div>
                     <h2 style="color:var(--primary)">模擬訂單已成立！</h2>
                     <p style="margin:15px 0; font-size:1.1rem;">訂單編號：<strong>${newOrder.id}</strong></p>
-                    <p style="color:#666;">付款方式：${paymentMethod}</p>
-                    <div style="background:#FFF9C4; padding:10px; border-radius:8px; margin-top:20px; font-size:0.85rem; color:#5D3A1A;">
-                        提醒：此為課程模擬專案，系統不會真實出貨與扣款。
-                    </div>
+                    <p style="color:#666;">感謝您填寫模擬測試問卷，這對我們的期末數據分析非常有幫助！</p>
                     <button class="buy-btn" style="margin-top:20px; width:100%; padding:12px;" onclick="closeModal('cart-modal')">繼續逛逛</button>
                 </div>
             `;
         }
 
-        // --- 管理後台機制 ---
         let adminClicks = 0;
         document.getElementById('admin-trigger').onclick = () => {
             adminClicks++;
-            if (adminClicks >= 5) {
-                navigate('admin');
-                adminClicks = 0;
-            }
+            if (adminClicks >= 5) { navigate('admin'); adminClicks = 0; }
         };
 
         function renderAdminOrders() {
             document.getElementById('order-log').innerHTML = orders.map(o => `
                 <tr>
                     <td>${o.id}</td>
+                    <td>${o.name}</td>
                     <td>${o.region}</td>
                     <td style="color:var(--primary); font-weight:bold;">$${o.total}</td>
-                    <td>${o.payment || '未紀錄'}</td>
-                    <td style="max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${o.items}">${o.items}</td>
-                    <td>${o.time}</td>
+                    <td style="font-size:0.75rem;">
+                        <div style="color:green">購買: ${o.qBuy || '-'}</div>
+                    </td>
+                    <td style="font-size:0.75rem;">${o.qRandomProd || '-'}</td>
+                    <td style="font-size:0.75rem; color:red;">${o.qNotBuy || '-'}</td>
+                    <td style="font-size:0.75rem; color:orange;">${o.qAbandon || '-'}</td>
+                    <td style="font-size:0.75rem; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${o.items}">${o.items}</td>
                 </tr>
             `).join('');
         }
 
         function exportOrders() {
-            let csv = "\uFEFF編號,暱稱,地區,付款方式,總金額,項目明細,時間\n";
-            orders.forEach(o => csv += `${o.id},${o.name},${o.region},${o.payment||''},${o.total},"${o.items}",${o.time}\n`);
+            let csv = "\uFEFF編號,暱稱,地區,付款方式,總金額,購買動機,放棄購物車主因,未購商品(隨機),未購原因,項目明細,時間\n";
+            orders.forEach(o => csv += `${o.id},${o.name},${o.region},${o.payment||''},${o.total},${o.qBuy||''},${o.qAbandon||''},${o.qRandomProd||''},${o.qNotBuy||''},"${o.items}",${o.time}\n`);
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
-            link.download = "本草寵集_模擬交易數據.csv";
+            link.download = "本草寵集_問卷與交易數據.csv";
             link.click();
         }
 
@@ -557,7 +552,6 @@
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        // --- 初始化 ---
         renderRanking();
         navigate('store');
         updateCartCount();

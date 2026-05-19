@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="本草寵集 - 本草機能，從飼料到藥品。以牛膝為核心的天然草本寵物品牌。">
-    <meta name="keywords" content="牛膝, 寵物機能, 草本飼料, 寵物保健, 本草寵集">
+    <meta name="keywords" content="牛膝, 寵物機能, boss草本飼料, 寵物保健, 本草寵集">
     <title>本草寵集 | 本草機能，從飼料到藥品</title>
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-RN9B3NY11D"></script>
@@ -45,6 +45,9 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background-color: var(--bg-warm); color: var(--dark-brown); font-family: 'Noto Sans TC', 'Poppins', sans-serif; line-height: 1.6; }
+
+        /* 修正二：置頂聲明區樣式 */
+        .top-disclaimer { background-color: #FFF3E0; color: #E65100; padding: 10px 5%; font-size: 0.8rem; text-align: justify; border-bottom: 1px solid #FFCC80; font-weight: bold; }
 
         header { background: var(--white); border-bottom: 2px solid var(--primary); position: sticky; top: 0; z-index: 1000; padding: 10px 5%; }
         .nav-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;}
@@ -103,18 +106,21 @@
         .form-group select, .form-group input { width: 100%; padding: 10px; border: 1px solid var(--accent); border-radius: 6px; font-family: inherit; }
 
         #admin-section { display: none; }
-        .admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; font-size: 0.8rem; }
-        .admin-table th, .admin-table td { border: 1px solid var(--accent); padding: 8px; }
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; font-size: 0.75rem; table-layout: fixed; }
+        .admin-table th, .admin-table td { border: 1px solid var(--accent); padding: 6px; overflow: hidden; text-overflow: ellipsis; word-wrap: break-word; }
         
         footer { text-align: center; padding: 50px 5%; background: var(--white); border-top: 1px solid var(--accent); margin-top: 50px; }
         .free-shipping-info { background: #FFF9C4; color: #5D3A1A; text-align: center; padding: 5px; font-size: 0.85rem; font-weight: 600; }
         
-        /* 問卷專區樣式 */
         .survey-box { background: #f0f7f4; padding: 15px; border-radius: 8px; border: 1px dashed var(--primary); margin-bottom: 20px; }
         .survey-box h4 { color: var(--primary); margin-bottom: 15px; font-size: 1rem; border-bottom: 1px solid #c8e6c9; padding-bottom: 5px; }
     </style>
 </head>
 <body>
+
+    <div class="top-disclaimer">
+        ⚠️ 聲明：本平台為亞洲大學經營管理學系「電子商務實務應用」課程建置之模擬電子商務平台，僅供學生進行電子商務平台經營、行銷設計與購物流程實作演練。平台內所呈現之商品、價格、訂單及交易流程皆為虛擬模擬內容，不代表實際販售行為，亦不會產生實際付款、購買、出貨或配送服務。
+    </div>
 
     <div class="free-shipping-info">✨ 限定驚喜：全站任選兩件商品即享免運 ✨</div>
 
@@ -185,15 +191,18 @@
         <table class="admin-table">
             <thead>
                 <tr>
-                    <th>編號</th>
-                    <th>暱稱</th>
-                    <th>地區</th>
-                    <th>總金額</th>
-                    <th>購買動機</th>
-                    <th>未買商品(隨機)</th>
-                    <th>未買原因</th>
-                    <th>放棄購物車主因</th>
-                    <th>購買明細</th>
+                    <th style="width: 70px;">編號</th>
+                    <th style="width: 70px;">暱稱</th>
+                    <th style="width: 50px;">地區</th>
+                    <th style="width: 50px;">性別</th>
+                    <th style="width: 70px;">年齡層</th>
+                    <th style="width: 70px;">職業</th>
+                    <th style="width: 70px;">總金額</th>
+                    <th style="width: 120px;">購買動機</th>
+                    <th style="width: 100px;">未買商品</th>
+                    <th style="width: 100px;">未買原因</th>
+                    <th style="width: 120px;">購物車放棄主因</th>
+                    <th style="width: 150px;">購買明細</th>
                 </tr>
             </thead>
             <tbody id="order-log"></tbody>
@@ -250,20 +259,16 @@
         const products = [
             { id: 'P01', name: '本系列機能飼料（1.5kg）', price: 899, category: '飼料', sales: 452, img: 'https://images.unsplash.com/photo-1568644396922-5c3bfae12521?auto=format&fit=crop&w=500&q=80', usp: ['添加5%牛膝萃取物','增強免疫力、抗發炎','科學實證基礎'], ingredients: '新鮮雞肉、糙米、燕麥、5%特選牛膝萃取粉、深海魚油、益生菌群。', usage: '作為每日主食餵食，依據犬隻體重與活動量調整份量。' },
             { id: 'P02', name: '萃系列營養保健品（粉劑）', price: 749, category: '保健品', sales: 215, img: 'https://images.unsplash.com/photo-1622484211147-7561f2f87c95?auto=format&fit=crop&w=500&q=80', usp: ['高濃度牛膝萃取','適合關節保健','易於拌入飼料'], ingredients: '高純度牛膝萃取物、葡萄糖胺、軟骨素、益生菌。', usage: '每日一次，10公斤以下1匙，10-20公斤2匙。' },
-            { id: 'P03', name: '萃系列營養保健品（膠囊）', price: 1099, category: '保健品', sales: 189, img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=500&q=80', usp: ['精準餵食劑型','強效關節照護','無草本苦味'], ingredients: '純化牛膝精華、水解膠原蛋白、維生素D3。', usage: '每日一次，飯後餵食。' },
+            { id: 'P03', name: '萃系列營養保健品（膠囊）', price: 1099, category: '保健品', sales: 189, img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=500&q=80', usp: ['精準餵食劑型','強效關節照照護','無草本苦味'], ingredients: '純化牛膝精華、水解膠原蛋白、維生素D3。', usage: '每日一次，飯後餵食。' },
             { id: 'P04', name: '臻系列寵物藥品（錠劑）', price: 399, category: '藥品', sales: 120, img: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&w=500&q=80', usp: ['純化牛膝活性成分','非處方安全性高','針對關節發炎'], ingredients: '牛膝抗炎分子純化物、微結晶纖維素。', usage: '急性關節不適每日兩次，每次一錠。' },
             { id: 'P05', name: '臻系列寵物藥品（滴劑）', price: 699, category: '藥品', sales: 98, img: 'https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?auto=format&fit=crop&w=500&q=80', usp: ['液態好吸收','適合高齡犬','免疫調節基礎'], ingredients: '牛膝水相萃取液、純水、天然甘油。', usage: '每日早晚各一次，每公斤體重滴入 0.5ml。' },
             { id: 'P06', name: '天然草本洗毛精（500ml）', price: 450, category: '清潔用品', sales: 320, img: 'https://images.unsplash.com/photo-1516733725897-1aa73b87c8e8?auto=format&fit=crop&w=500&q=80', usp: ['牛膝溫和舒緩配方','不刺激寵物肌膚','天然草本清香'], ingredients: '胺基酸起泡劑、牛膝草本萃取、燕麥精華。', usage: '搓揉起泡後按摩皮毛，再以溫水沖淨。' },
             { id: 'P07', name: '牛膝潔牙骨（5入）', price: 199, category: '玩具零食', sales: 856, img: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=500&q=80', usp: ['磨牙同時補充營養','適口性極佳','提升口腔健康'], ingredients: '樹薯澱粉、牛膝細粉、薄荷油。', usage: '每日給予一根作為獎勵與潔牙使用。' }
         ];
 
-        // 購物車與收藏保留在設備本地端
         let cart = JSON.parse(localStorage.getItem('herb_cart')) || [];
         let favs = JSON.parse(localStorage.getItem('herb_favs')) || [];
-        
-        // 訂單變數 (將從雲端讀取)
         let orders = [];
-        
         let currentCategory = '全部';
         let currentPage = 'store';
 
@@ -294,7 +299,7 @@
                 document.querySelector('li[onclick="navigate(\'contact\')"]').classList.add('active');
             } else if (page === 'admin') {
                 document.getElementById('admin-section').style.display = 'block';
-                renderAdminOrders(); // 進入後台時觸發雲端讀取
+                renderAdminOrders();
             }
         }
 
@@ -416,6 +421,7 @@
             document.getElementById('cart-flow-content').innerHTML = html;
         }
 
+        // --- 修正一：問卷填寫介面優化（新增性別、年齡、職業勾選/下拉） ---
         function renderCartStep2() {
             document.getElementById('step1-label').style.color = '#999'; document.getElementById('step1-label').style.fontWeight = 'normal';
             document.getElementById('step2-label').style.color = 'var(--primary)'; document.getElementById('step2-label').style.fontWeight = 'bold';
@@ -432,6 +438,35 @@
                         </div>
                         <div class="form-group"><label>付款方式 * (測試用)</label>
                             <select id="order-payment"><option value="信用卡付款">信用卡付款</option><option value="LINE Pay">LINE Pay</option><option value="貨到付款">貨到付款</option></select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>您的性別 *</label>
+                            <select id="order-gender">
+                                <option value="女性">女性</option>
+                                <option value="男性">男性</option>
+                                <option value="不便透露">不便透露</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>您的年齡層 *</label>
+                            <select id="order-age">
+                                <option value="18-24歲">18-24歲</option>
+                                <option value="25-34歲">25-34歲</option>
+                                <option value="35-44歲">35-44歲</option>
+                                <option value="45歲以上">45歲以上</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>您的職業 *</label>
+                            <select id="order-job">
+                                <option value="學生">學生</option>
+                                <option value="上班族(一般商業)">上班族(一般商業)</option>
+                                <option value="軍公教">軍公教</option>
+                                <option value="自由業/接案">自由業/接案</option>
+                                <option value="家管/待業">家管/待業</option>
+                                <option value="其他">其他</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -481,12 +516,10 @@
             `;
         }
 
-        // --- 核心更新：將資料上傳至 Firebase ---
         function finishOrder() {
             const name = document.getElementById('order-name').value;
             if (!name) return alert("請填寫暱稱");
             
-            // 鎖定按鈕防止重複提交
             document.getElementById('btn-submit').innerText = "資料上傳中...";
             document.getElementById('btn-submit').disabled = true;
             document.getElementById('btn-prev').disabled = true;
@@ -495,11 +528,15 @@
             const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
             const shipping = totalQty >= 2 ? 0 : 80;
             
+            // 修正一底層：打包新欄位資料
             const newOrder = {
                 id: 'ORD' + Date.now().toString().slice(-6),
                 name: name,
                 region: document.getElementById('order-region').value,
                 payment: document.getElementById('order-payment').value,
+                gender: document.getElementById('order-gender').value, // 新增
+                age: document.getElementById('order-age').value,       // 新增
+                job: document.getElementById('order-job').value,       // 新增
                 qBuy: document.getElementById('q-reason-buy').value,
                 qAbandon: document.getElementById('q-reason-abandon').value,
                 qRandomProd: document.getElementById('q-random-prod-name').getAttribute('data-id'),
@@ -509,7 +546,6 @@
                 time: new Date().toLocaleString()
             };
             
-            // 使用 Firebase API 將資料寫入雲端
             db.collection("orders").add(newOrder).then(() => {
                 gtag('event', 'purchase', { transaction_id: newOrder.id, value: newOrder.total, currency: 'TWD' });
 
@@ -531,7 +567,7 @@
                 `;
             }).catch((error) => {
                 console.error("資料庫寫入失敗: ", error);
-                alert("系統連線異常，訂單提交失敗。請檢查網路或聯繫開發團隊。");
+                alert("系統連線異常，訂單提交失敗。");
                 document.getElementById('btn-submit').innerText = "確認送出訂單與問卷";
                 document.getElementById('btn-submit').disabled = false;
                 document.getElementById('btn-prev').disabled = false;
@@ -544,22 +580,18 @@
             if (adminClicks >= 5) { navigate('admin'); adminClicks = 0; }
         };
 
-        // --- 核心更新：從 Firebase 讀取所有資料 ---
+        // --- 修正一底層：後台表格呈現邏輯升級 ---
         function renderAdminOrders() {
             const tbody = document.getElementById('order-log');
-            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:30px;">🔄 正在從雲端資料庫同步數據...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="12" style="text-align:center; padding:30px;">🔄 正在從雲端資料庫同步數據...</td></tr>';
 
             db.collection("orders").get().then((querySnapshot) => {
                 orders = [];
-                querySnapshot.forEach((doc) => {
-                    orders.push(doc.data());
-                });
-
-                // 簡單反轉陣列，讓最新訂單在最上面
+                querySnapshot.forEach((doc) => { orders.push(doc.data()); });
                 orders.reverse();
 
                 if (orders.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:30px;">尚無雲端訂單紀錄</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="12" style="text-align:center; padding:30px;">尚無雲端訂單紀錄</td></tr>';
                     return;
                 }
 
@@ -568,28 +600,34 @@
                         <td>${o.id}</td>
                         <td>${o.name}</td>
                         <td>${o.region}</td>
+                        <td>${o.gender || '-'}</td>
+                        <td>${o.age || '-'}</td>
+                        <td>${o.job || '-'}</td>
                         <td style="color:var(--primary); font-weight:bold;">$${o.total}</td>
-                        <td style="font-size:0.75rem;"><div style="color:green">購買: ${o.qBuy || '-'}</div></td>
-                        <td style="font-size:0.75rem;">${o.qRandomProd || '-'}</td>
-                        <td style="font-size:0.75rem; color:red;">${o.qNotBuy || '-'}</td>
-                        <td style="font-size:0.75rem; color:orange;">${o.qAbandon || '-'}</td>
-                        <td style="font-size:0.75rem; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${o.items}">${o.items}</td>
+                        <td style="font-size:0.7rem; color:green;">${o.qBuy || '-'}</td>
+                        <td style="font-size:0.7rem;">${o.qRandomProd || '-'}</td>
+                        <td style="font-size:0.7rem; color:red;">${o.qNotBuy || '-'}</td>
+                        <td style="font-size:0.7rem; color:orange;">${o.qAbandon || '-'}</td>
+                        <td style="font-size:0.7rem;" title="${o.items}">${o.items}</td>
                     </tr>
                 `).join('');
             }).catch((error) => {
                 console.error("讀取失敗: ", error);
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:red; padding:30px;">雲端資料讀取失敗！請確認 Firebase 資料庫規則是否設定為 allow read, write: if true;</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="12" style="text-align:center; color:red; padding:30px;">雲端資料讀取失敗！</td></tr>';
             });
         }
 
+        // --- 修正一底層：CSV 匯出欄位對齊升級 ---
         function exportOrders() {
             if(orders.length === 0) return alert("目前尚無資料可匯出");
-            let csv = "\uFEFF編號,暱稱,地區,付款方式,總金額,購買動機,放棄購物車主因,未購商品(隨機),未購原因,項目明細,時間\n";
-            orders.forEach(o => csv += `${o.id},${o.name},${o.region},${o.payment||''},${o.total},${o.qBuy||''},${o.qAbandon||''},${o.qRandomProd||''},${o.qNotBuy||''},"${o.items}",${o.time}\n`);
+            let csv = "\uFEFF編號,暱稱,地區,付款方式,性別,年齡層,職業,總金額,購買動機,放棄購物車主因,未購商品(隨機),未購原因,項目明細,時間\n";
+            orders.forEach(o => {
+                csv += `${o.id},${o.name},${o.region},${o.payment||''},${o.gender||''},${o.age||''},${o.job||''},${o.total},${o.qBuy||''},${o.qAbandon||''},${o.qRandomProd||''},${o.qNotBuy||''},"${o.items}",${o.time}\n`;
+            });
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
-            link.download = "本草寵集_雲端問卷與交易數據.csv";
+            link.download = "本草寵集_雲端問卷與交易數據_V6.csv";
             link.click();
         }
 

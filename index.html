@@ -6,6 +6,7 @@
     <meta name="description" content="本草寵集 - 本草機能，從飼料到藥品。以牛膝為核心的天然草本寵物品牌。">
     <meta name="keywords" content="牛膝, 寵物機能, 草本飼料, 寵物保健, 本草寵集">
     <title>本草寵集 | 本草機能，從飼料到藥品</title>
+    
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-RN9B3NY11D"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -13,6 +14,24 @@
         gtag('js', new Date());
         gtag('config', 'G-RN9B3NY11D');
     </script>
+
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
+    <script>
+        // 初始化您的雲端資料庫
+        const firebaseConfig = {
+            apiKey: "AIzaSyD7IwQfUDXima_jhvalw07z9gRPyciX_TU",
+            authDomain: "herb-pet.firebaseapp.com",
+            projectId: "herb-pet",
+            storageBucket: "herb-pet.firebasestorage.app",
+            messagingSenderId: "206834748853",
+            appId: "1:206834748853:web:970919f4cf1ec2e04b1dfc",
+            measurementId: "G-1H010N4NZQ"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Noto+Sans+TC:wght@400;700&display=swap');
 
@@ -158,7 +177,7 @@
     </div>
 
     <div id="admin-section" class="container page-section" style="max-width:100%; overflow-x:auto;">
-        <h2>系統後台數據中心</h2>
+        <h2>系統後台數據中心 (已連線雲端資料庫)</h2>
         <div style="margin: 20px 0; display: flex; gap: 10px;">
             <button class="buy-btn" onclick="exportOrders()">匯出訂單 CSV</button>
             <button class="buy-btn" style="background:#555" onclick="navigate('store')">返回商城</button>
@@ -238,9 +257,13 @@
             { id: 'P07', name: '牛膝潔牙骨（5入）', price: 199, category: '玩具零食', sales: 856, img: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=500&q=80', usp: ['磨牙同時補充營養','適口性極佳','提升口腔健康'], ingredients: '樹薯澱粉、牛膝細粉、薄荷油。', usage: '每日給予一根作為獎勵與潔牙使用。' }
         ];
 
+        // 購物車與收藏保留在設備本地端
         let cart = JSON.parse(localStorage.getItem('herb_cart')) || [];
-        let orders = JSON.parse(localStorage.getItem('herb_orders')) || [];
         let favs = JSON.parse(localStorage.getItem('herb_favs')) || [];
+        
+        // 訂單變數 (將從雲端讀取)
+        let orders = [];
+        
         let currentCategory = '全部';
         let currentPage = 'store';
 
@@ -271,7 +294,7 @@
                 document.querySelector('li[onclick="navigate(\'contact\')"]').classList.add('active');
             } else if (page === 'admin') {
                 document.getElementById('admin-section').style.display = 'block';
-                renderAdminOrders();
+                renderAdminOrders(); // 進入後台時觸發雲端讀取
             }
         }
 
@@ -393,12 +416,10 @@
             document.getElementById('cart-flow-content').innerHTML = html;
         }
 
-        // --- 核心更新：加入隨機未購商品與流失問卷 ---
         function renderCartStep2() {
             document.getElementById('step1-label').style.color = '#999'; document.getElementById('step1-label').style.fontWeight = 'normal';
             document.getElementById('step2-label').style.color = 'var(--primary)'; document.getElementById('step2-label').style.fontWeight = 'bold';
             
-            // 找出不在購物車內的商品進行隨機抽選
             const unbought = products.filter(p => !cart.find(c => c.id === p.id));
             const randomProd = unbought.length > 0 ? unbought[Math.floor(Math.random() * unbought.length)] : products[0];
 
@@ -417,7 +438,6 @@
                 
                 <div class="survey-box">
                     <h4>📝 本次模擬測試專用問卷</h4>
-                    
                     <div class="form-group">
                         <label>1. 請問您這次決定參與模擬購買的主要原因？</label>
                         <select id="q-reason-buy">
@@ -428,18 +448,16 @@
                             <option value="單純幫忙測試系統">單純幫忙測試系統</option>
                         </select>
                     </div>
-
                     <div class="form-group">
-                        <label>2. 在真實網購環境下，若您將商品放入購物車卻遲遲未結帳（放棄購物車），最主要的原因通常是？</label>
+                        <label>2. 在真實網購環境下，若您將商品放入購物車卻放棄結帳，主因通常是？</label>
                         <select id="q-reason-abandon">
                             <option value="結帳要填的資料太多太繁瑣">結帳要填的資料太多太繁瑣</option>
                             <option value="結帳時才發現運費太高">結帳時才發現運費太高</option>
                             <option value="還想去別的平台比價">還想去別的平台比價</option>
                             <option value="找不到信任的付款方式">找不到信任的付款方式</option>
-                            <option value="只是先放著當作購物清單，還沒決定買">只是先放著當作購物清單，還沒決定買</option>
+                            <option value="只是先放著當作購物清單">只是先放著當作購物清單</option>
                         </select>
                     </div>
-
                     <div class="form-group" style="background:#fff; padding:10px; border-radius:6px; border:1px solid #ddd;">
                         <label>3. 經系統偵測，您本次並未選購以下商品，能告訴我們原因嗎？</label>
                         <div style="display:flex; align-items:center; gap:10px; margin:10px 0;">
@@ -457,61 +475,67 @@
                 </div>
 
                 <div style="display:flex; gap:10px;">
-                    <button class="buy-btn" style="background:#ccc; width:30%; padding:12px;" onclick="renderCartStep1()">上一步</button>
-                    <button class="buy-btn" style="width:70%; padding:12px; font-size:1rem;" onclick="finishOrder()">確認送出訂單與問卷</button>
+                    <button class="buy-btn" id="btn-prev" style="background:#ccc; width:30%; padding:12px;" onclick="renderCartStep1()">上一步</button>
+                    <button class="buy-btn" id="btn-submit" style="width:70%; padding:12px; font-size:1rem;" onclick="finishOrder()">確認送出訂單與問卷</button>
                 </div>
             `;
         }
 
+        // --- 核心更新：將資料上傳至 Firebase ---
         function finishOrder() {
             const name = document.getElementById('order-name').value;
             if (!name) return alert("請填寫暱稱");
             
+            // 鎖定按鈕防止重複提交
+            document.getElementById('btn-submit').innerText = "資料上傳中...";
+            document.getElementById('btn-submit').disabled = true;
+            document.getElementById('btn-prev').disabled = true;
+
             const totalQty = cart.reduce((s, i) => s + i.qty, 0);
             const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
             const shipping = totalQty >= 2 ? 0 : 80;
-            const paymentMethod = document.getElementById('order-payment').value;
             
-            // 抓取問卷資料
-            const qBuy = document.getElementById('q-reason-buy').value;
-            const qAbandon = document.getElementById('q-reason-abandon').value;
-            const qRandomProd = document.getElementById('q-random-prod-name').getAttribute('data-id');
-            const qNotBuy = document.getElementById('q-reason-not-buy').value;
-
             const newOrder = {
                 id: 'ORD' + Date.now().toString().slice(-6),
                 name: name,
                 region: document.getElementById('order-region').value,
-                payment: paymentMethod,
-                qBuy: qBuy,
-                qAbandon: qAbandon,
-                qRandomProd: qRandomProd,
-                qNotBuy: qNotBuy,
+                payment: document.getElementById('order-payment').value,
+                qBuy: document.getElementById('q-reason-buy').value,
+                qAbandon: document.getElementById('q-reason-abandon').value,
+                qRandomProd: document.getElementById('q-random-prod-name').getAttribute('data-id'),
+                qNotBuy: document.getElementById('q-reason-not-buy').value,
                 total: subtotal + shipping,
                 items: cart.map(i => `${i.name}${i.detail||''} x${i.qty}`).join(' | '),
                 time: new Date().toLocaleString()
             };
             
-            orders.push(newOrder);
-            localStorage.setItem('herb_orders', JSON.stringify(orders));
-            gtag('event', 'purchase', { transaction_id: newOrder.id, value: newOrder.total, currency: 'TWD' });
+            // 使用 Firebase API 將資料寫入雲端
+            db.collection("orders").add(newOrder).then(() => {
+                gtag('event', 'purchase', { transaction_id: newOrder.id, value: newOrder.total, currency: 'TWD' });
 
-            cart = [];
-            localStorage.removeItem('herb_cart');
-            updateCartCount();
-            
-            document.getElementById('step2-label').style.color = '#999'; document.getElementById('step2-label').style.fontWeight = 'normal';
-            document.getElementById('step3-label').style.color = 'var(--primary)'; document.getElementById('step3-label').style.fontWeight = 'bold';
-            
-            document.getElementById('cart-flow-content').innerHTML = `
-                <div style="text-align:center; padding:30px;">
-                    <div style="font-size:3rem; margin-bottom:10px;">🎉</div>
-                    <h2 style="color:var(--primary)">模擬訂單已成立！</h2>
-                    <p style="margin:15px 0; font-size:1.1rem;">訂單編號：<strong>${newOrder.id}</strong></p>
-                    <p style="color:#666;">感謝您填寫模擬測試問卷，這對我們的期末數據分析非常有幫助！</p>
-                    <button class="buy-btn" style="margin-top:20px; width:100%; padding:12px;" onclick="closeModal('cart-modal')">繼續逛逛</button>
-                </div>
-            `;
+                cart = [];
+                localStorage.removeItem('herb_cart');
+                updateCartCount();
+                
+                document.getElementById('step2-label').style.color = '#999'; document.getElementById('step2-label').style.fontWeight = 'normal';
+                document.getElementById('step3-label').style.color = 'var(--primary)'; document.getElementById('step3-label').style.fontWeight = 'bold';
+                
+                document.getElementById('cart-flow-content').innerHTML = `
+                    <div style="text-align:center; padding:30px;">
+                        <div style="font-size:3rem; margin-bottom:10px;">🎉</div>
+                        <h2 style="color:var(--primary)">模擬訂單已成立！</h2>
+                        <p style="margin:15px 0; font-size:1.1rem;">訂單編號：<strong>${newOrder.id}</strong></p>
+                        <p style="color:#666;">感謝您填寫模擬測試問卷，這對我們的期末數據分析非常有幫助！</p>
+                        <button class="buy-btn" style="margin-top:20px; width:100%; padding:12px;" onclick="closeModal('cart-modal')">繼續逛逛</button>
+                    </div>
+                `;
+            }).catch((error) => {
+                console.error("資料庫寫入失敗: ", error);
+                alert("系統連線異常，訂單提交失敗。請檢查網路或聯繫開發團隊。");
+                document.getElementById('btn-submit').innerText = "確認送出訂單與問卷";
+                document.getElementById('btn-submit').disabled = false;
+                document.getElementById('btn-prev').disabled = false;
+            });
         }
 
         let adminClicks = 0;
@@ -520,31 +544,52 @@
             if (adminClicks >= 5) { navigate('admin'); adminClicks = 0; }
         };
 
+        // --- 核心更新：從 Firebase 讀取所有資料 ---
         function renderAdminOrders() {
-            document.getElementById('order-log').innerHTML = orders.map(o => `
-                <tr>
-                    <td>${o.id}</td>
-                    <td>${o.name}</td>
-                    <td>${o.region}</td>
-                    <td style="color:var(--primary); font-weight:bold;">$${o.total}</td>
-                    <td style="font-size:0.75rem;">
-                        <div style="color:green">購買: ${o.qBuy || '-'}</div>
-                    </td>
-                    <td style="font-size:0.75rem;">${o.qRandomProd || '-'}</td>
-                    <td style="font-size:0.75rem; color:red;">${o.qNotBuy || '-'}</td>
-                    <td style="font-size:0.75rem; color:orange;">${o.qAbandon || '-'}</td>
-                    <td style="font-size:0.75rem; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${o.items}">${o.items}</td>
-                </tr>
-            `).join('');
+            const tbody = document.getElementById('order-log');
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:30px;">🔄 正在從雲端資料庫同步數據...</td></tr>';
+
+            db.collection("orders").get().then((querySnapshot) => {
+                orders = [];
+                querySnapshot.forEach((doc) => {
+                    orders.push(doc.data());
+                });
+
+                // 簡單反轉陣列，讓最新訂單在最上面
+                orders.reverse();
+
+                if (orders.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:30px;">尚無雲端訂單紀錄</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = orders.map(o => `
+                    <tr>
+                        <td>${o.id}</td>
+                        <td>${o.name}</td>
+                        <td>${o.region}</td>
+                        <td style="color:var(--primary); font-weight:bold;">$${o.total}</td>
+                        <td style="font-size:0.75rem;"><div style="color:green">購買: ${o.qBuy || '-'}</div></td>
+                        <td style="font-size:0.75rem;">${o.qRandomProd || '-'}</td>
+                        <td style="font-size:0.75rem; color:red;">${o.qNotBuy || '-'}</td>
+                        <td style="font-size:0.75rem; color:orange;">${o.qAbandon || '-'}</td>
+                        <td style="font-size:0.75rem; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${o.items}">${o.items}</td>
+                    </tr>
+                `).join('');
+            }).catch((error) => {
+                console.error("讀取失敗: ", error);
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:red; padding:30px;">雲端資料讀取失敗！請確認 Firebase 資料庫規則是否設定為 allow read, write: if true;</td></tr>';
+            });
         }
 
         function exportOrders() {
+            if(orders.length === 0) return alert("目前尚無資料可匯出");
             let csv = "\uFEFF編號,暱稱,地區,付款方式,總金額,購買動機,放棄購物車主因,未購商品(隨機),未購原因,項目明細,時間\n";
             orders.forEach(o => csv += `${o.id},${o.name},${o.region},${o.payment||''},${o.total},${o.qBuy||''},${o.qAbandon||''},${o.qRandomProd||''},${o.qNotBuy||''},"${o.items}",${o.time}\n`);
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
-            link.download = "本草寵集_問卷與交易數據.csv";
+            link.download = "本草寵集_雲端問卷與交易數據.csv";
             link.click();
         }
 
